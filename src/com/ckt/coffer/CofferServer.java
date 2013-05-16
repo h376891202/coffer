@@ -5,10 +5,35 @@ import java.util.List;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.IBinder;
 
 public class CofferServer extends Service implements ObjectInterface{
 	private List<Objects> mObjects = new ArrayList<Objects>();
+	
+	public CofferServerBinder mCofferServiceBinder = new CofferServerBinder();
+	
+	public class CofferServerBinder extends Binder{
+		 public CofferServer getService(){
+	            return CofferServer.this;
+	        }
+	};
+	
+	public void registObjects(Objects objects){
+		mObjects.add(objects);
+	}
+	
+	public void unRegistObjects(Objects objects){
+		mObjects.remove(objects);
+	}
+	
+	public void unRegistObjects(String objectsName){
+		for(Objects object : mObjects){
+			if(object.mNameLable != null && object.mNameLable.equals(objectsName)){
+				mObjects.remove(object);
+			}
+		}
+	}
 	
 	@Override
 	public void onCreate() {
@@ -47,8 +72,7 @@ public class CofferServer extends Service implements ObjectInterface{
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		// TODO Auto-generated method stub
-		return null;
+		return mCofferServiceBinder;
 	}
 
 }
